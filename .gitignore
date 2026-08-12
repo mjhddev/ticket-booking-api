@@ -1,0 +1,21 @@
+# Environment
+.env
+
+# VS Code
+.vscode/
+
+# Go binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
