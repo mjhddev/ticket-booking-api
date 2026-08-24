@@ -54,13 +54,15 @@ func main() {
 	// Handler
 	// =========================
 	authHandler := handler.NewAuthHandler(authService)
+	profileHandler := handler.NewProfileHandler()
 
 	// =========================
 	// Router
 	// =========================
 	router := routes.SetupRouter(routes.Handlers{
-		Auth: authHandler,
-	})
+		Auth:    authHandler,
+		Profile: profileHandler,
+	}, jwtManager)
 
 	log.Info("Starting HTTP server", "port", cfg.AppPort)
 
