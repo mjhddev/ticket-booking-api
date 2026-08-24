@@ -2,7 +2,9 @@ package config
 
 import (
 	"fmt"
+	"log"
 	"os"
+	"time"
 
 	"github.com/joho/godotenv"
 )
@@ -15,6 +17,9 @@ type Config struct {
 	DBUser     string
 	DBPassword string
 	DBName     string
+
+	JWTSecret    string
+	JWTExpiredIn time.Duration
 
 	RedisHost string
 	RedisPort string
@@ -30,6 +35,11 @@ func Load() (*Config, error) {
 		return nil, fmt.Errorf("failed to load .env file: %w", err)
 	}
 
+	duration, err := time.ParseDuration(getEnv("JWT_EXPIRED_IN"))
+	if err != nil {
+		log.Fatalf("invalid JWT_EXPIRED_IN: %v", err)
+	}
+
 	cfg := &Config{
 		AppPort: getEnv("APP_PORT"),
 
@@ -38,6 +48,9 @@ func Load() (*Config, error) {
 		DBUser:     getEnv("DB_USER"),
 		DBPassword: getEnv("DB_PASSWORD"),
 		DBName:     getEnv("DB_NAME"),
+
+		JWTSecret:    getEnv("JWT_SECRET"),
+		JWTExpiredIn: duration,
 
 		RedisHost: getEnv("REDIS_HOST"),
 		RedisPort: getEnv("REDIS_PORT"),

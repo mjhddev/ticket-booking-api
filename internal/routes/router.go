@@ -2,13 +2,24 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	handlers "github.com/mjhddev/ticket-booking-api/internal/handler"
+	"github.com/mjhddev/ticket-booking-api/internal/handler"
 )
 
-func SetupRouter() *gin.Engine {
+type Handlers struct {
+	Auth *handler.AuthHandler
+}
+
+func SetupRouter(h Handlers) *gin.Engine {
 	router := gin.Default()
-	healthHandler := handlers.NewHealthHandler()
-	router.GET("/health", healthHandler.Health)
+
+	api := router.Group("/api/v1")
+	{
+		auth := api.Group("/auth")
+		{
+			auth.POST("/register", h.Auth.Register)
+			auth.POST("/login", h.Auth.Login)
+		}
+	}
 
 	return router
 }

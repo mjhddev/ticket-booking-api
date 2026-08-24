@@ -5,8 +5,12 @@ import (
 
 	"github.com/mjhddev/ticket-booking-api/internal/config"
 	"github.com/mjhddev/ticket-booking-api/internal/database"
+	"github.com/mjhddev/ticket-booking-api/internal/handler"
 	"github.com/mjhddev/ticket-booking-api/internal/logger"
+	"github.com/mjhddev/ticket-booking-api/internal/repository"
 	"github.com/mjhddev/ticket-booking-api/internal/routes"
+	"github.com/mjhddev/ticket-booking-api/internal/service"
+	"github.com/mjhddev/ticket-booking-api/internal/utils"
 )
 
 func main() {
@@ -31,7 +35,32 @@ func main() {
 
 	log.Info("Database connected")
 
-	router := routes.SetupRouter()
+	jwtManager := utils.NewJWTManager(
+		cfg.JWTSecret,
+		cfg.JWTExpiredIn,
+	)
+
+	// =========================
+	// Repository
+	// =========================
+	userRepository := repository.NewUserRepository(db)
+
+	// =========================
+	// Service
+	// =========================
+	authService := service.NewAuthService(userRepository, jwtManager)
+
+	// =========================
+	// Handler
+	// =========================
+	authHandler := handler.NewAuthHandler(authService)
+
+	// =========================
+	// Router
+	// =========================
+	router := routes.SetupRouter(routes.Handlers{
+		Auth: authHandler,
+	})
 
 	log.Info("Starting HTTP server", "port", cfg.AppPort)
 
@@ -39,6 +68,4 @@ func main() {
 		log.Error("server stopped", "error", err)
 		os.Exit(1)
 	}
-
-	_ = db
 }
