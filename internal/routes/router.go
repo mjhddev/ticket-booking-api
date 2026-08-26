@@ -10,6 +10,7 @@ import (
 type Handlers struct {
 	Auth    *handler.AuthHandler
 	Profile *handler.ProfileHandler
+	Event   *handler.EventHandler
 }
 
 func SetupRouter(h Handlers, jwtManager *utils.JWTManager) *gin.Engine {
@@ -27,6 +28,38 @@ func SetupRouter(h Handlers, jwtManager *utils.JWTManager) *gin.Engine {
 	protected.Use(middleware.AuthMiddleware(jwtManager))
 	{
 		protected.GET("/profile", h.Profile.Get)
+	}
+
+	events := protected.Group("/events")
+	{
+		events.POST(
+			"",
+			middleware.RequireRole("admin", "organizer"),
+			h.Event.Create,
+		)
+
+		events.GET("", h.Event.GetPublished)
+
+		events.GET("/:id", h.Event.GetByID)
+
+		events.PUT(
+			"/:id",
+			middleware.RequireRole("admin", "organizer"),
+			h.Event.Update,
+		)
+
+		events.DELETE(
+			"/:id",
+			middleware.RequireRole("admin", "organizer"),
+			h.Event.Delete,
+		)
+
+		events.PATCH(
+			"/:id/publish",
+			middleware.RequireRole("admin", "organizer"),
+			h.Event.Publish,
+		)
+
 	}
 
 	return router

@@ -44,17 +44,20 @@ func main() {
 	// Repository
 	// =========================
 	userRepository := repository.NewUserRepository(db)
+	eventRepository := repository.NewEventRepository(db)
 
 	// =========================
 	// Service
 	// =========================
 	authService := service.NewAuthService(userRepository, jwtManager)
+	eventService := service.NewEventService(eventRepository)
 
 	// =========================
 	// Handler
 	// =========================
 	authHandler := handler.NewAuthHandler(authService)
 	profileHandler := handler.NewProfileHandler()
+	eventHandler := handler.NewEventHandler(eventService)
 
 	// =========================
 	// Router
@@ -62,6 +65,7 @@ func main() {
 	router := routes.SetupRouter(routes.Handlers{
 		Auth:    authHandler,
 		Profile: profileHandler,
+		Event:   eventHandler,
 	}, jwtManager)
 
 	log.Info("Starting HTTP server", "port", cfg.AppPort)
