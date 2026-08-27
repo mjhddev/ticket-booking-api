@@ -45,12 +45,16 @@ func main() {
 	// =========================
 	userRepository := repository.NewUserRepository(db)
 	eventRepository := repository.NewEventRepository(db)
+	seatRepository := repository.NewSeatRepository(db)
+	bookingRepository := repository.NewBookingRepository(db)
 
 	// =========================
 	// Service
 	// =========================
 	authService := service.NewAuthService(userRepository, jwtManager)
 	eventService := service.NewEventService(eventRepository)
+	seatService := service.NewSeatService(seatRepository, eventRepository)
+	bookingService := service.NewBookingService(db, bookingRepository, eventRepository)
 
 	// =========================
 	// Handler
@@ -58,6 +62,8 @@ func main() {
 	authHandler := handler.NewAuthHandler(authService)
 	profileHandler := handler.NewProfileHandler()
 	eventHandler := handler.NewEventHandler(eventService)
+	seatHandler := handler.NewSeatHandler(seatService)
+	bookingHandler := handler.NewBookingHandler(bookingService)
 
 	// =========================
 	// Router
@@ -66,6 +72,8 @@ func main() {
 		Auth:    authHandler,
 		Profile: profileHandler,
 		Event:   eventHandler,
+		Seat:    seatHandler,
+		Booking: bookingHandler,
 	}, jwtManager)
 
 	log.Info("Starting HTTP server", "port", cfg.AppPort)

@@ -11,6 +11,8 @@ type Handlers struct {
 	Auth    *handler.AuthHandler
 	Profile *handler.ProfileHandler
 	Event   *handler.EventHandler
+	Seat    *handler.SeatHandler
+	Booking *handler.BookingHandler
 }
 
 func SetupRouter(h Handlers, jwtManager *utils.JWTManager) *gin.Engine {
@@ -60,6 +62,20 @@ func SetupRouter(h Handlers, jwtManager *utils.JWTManager) *gin.Engine {
 			h.Event.Publish,
 		)
 
+		events.POST(
+			"/:id/seats",
+			middleware.RequireRole("admin", "organizer"),
+			h.Seat.CreateSeats,
+		)
+
+		events.GET(
+			"/:id/seats",
+			h.Seat.GetSeatsByEvent,
+		)
+	}
+	bookings := protected.Group("/bookings")
+	{
+		bookings.POST("", h.Booking.CreateBooking)
 	}
 
 	return router

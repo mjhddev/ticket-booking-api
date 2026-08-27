@@ -11,4 +11,10 @@ var (
 	ErrInvalidEventTime       = errors.New("end time must be after start time")
 	ErrInvalidEventStatus     = errors.New("invalid event status")
 	ErrEventCannotBePublished = errors.New("event cannot be published")
+
+	ErrSeatAlreadyExists = errors.New("seat already exists")
+	ErrSeatNotFound      = errors.New("seat not found")
+
+	ErrSeatNotAvailable = errors.New("seat is not available")
+	ErrInvalidBooking   = errors.New("invalid booking")
 )
