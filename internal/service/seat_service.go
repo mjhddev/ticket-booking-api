@@ -27,7 +27,12 @@ func NewSeatService(seatRepo repository.SeatRepository, eventRepo repository.Eve
 	}
 }
 
-func (s *seatService) CreateSeats(ctx context.Context, organizerID uint64, eventID uint64, req dto.CreateSeatsRequest) ([]dto.SeatResponse, error) {
+func (s *seatService) CreateSeats(
+	ctx context.Context,
+	organizerID uint64,
+	eventID uint64,
+	req dto.CreateSeatsRequest,
+) ([]dto.SeatResponse, error) {
 
 	event, err := s.eventRepo.FindByID(ctx, eventID)
 	if err != nil {
@@ -72,7 +77,7 @@ func (s *seatService) CreateSeats(ctx context.Context, organizerID uint64, event
 		return nil, errs.ErrSeatNotFound
 	}
 
-	if err := s.seatRepo.CreateBatch(ctx, seats); err != nil {
+	if err := s.seatRepo.CreateMany(ctx, seats); err != nil {
 		return nil, err
 	}
 

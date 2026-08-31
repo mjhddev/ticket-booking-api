@@ -76,6 +76,8 @@ func SetupRouter(h Handlers, jwtManager *utils.JWTManager) *gin.Engine {
 	bookings := protected.Group("/bookings")
 	{
 		bookings.POST("", h.Booking.CreateBooking)
+		bookings.GET("/:id", h.Booking.GetBookingByID)
+		bookings.DELETE("/:id", h.Booking.CancelBooking)
 	}
 
 	return router

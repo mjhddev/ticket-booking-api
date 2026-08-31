@@ -54,7 +54,7 @@ func main() {
 	authService := service.NewAuthService(userRepository, jwtManager)
 	eventService := service.NewEventService(eventRepository)
 	seatService := service.NewSeatService(seatRepository, eventRepository)
-	bookingService := service.NewBookingService(db, bookingRepository, eventRepository)
+	bookingService := service.NewBookingService(db, bookingRepository, eventRepository, seatRepository)
 
 	// =========================
 	// Handler
